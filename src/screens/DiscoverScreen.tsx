@@ -1,5 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Modal,
@@ -16,14 +17,19 @@ import { PrimaryButton, SectionLabel, VibeChip } from '../components/ui';
 import { VIBES } from '../data/vibes';
 import { personById } from '../data/seed';
 import { rankEvents } from '../lib/ranking';
-import type { RootStackParamList } from '../navigation/types';
+import type { RootStackParamList, RootTabParamList } from '../navigation/types';
 import { labelJoins, useAppStore } from '../store/useAppStore';
 import { colors, fonts, radius } from '../theme';
 import type { VibeId } from '../types';
 
 export function DiscoverScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<
+    CompositeNavigationProp<
+      BottomTabNavigationProp<RootTabParamList, 'Discover'>,
+      StackNavigationProp<RootStackParamList>
+    >
+  >();
   const events = useAppStore((s) => s.events);
   const crews = useAppStore((s) => s.crews);
   const userVibes = useAppStore((s) => s.userVibes);

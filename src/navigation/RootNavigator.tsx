@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { DarkTheme, NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { Platform, StyleSheet, View } from 'react-native';
 import { PaywallSheet } from '../components/PaywallSheet';
 import { AfterglowScreen } from '../screens/AfterglowScreen';
@@ -13,7 +13,9 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors, fonts } from '../theme';
 import type { RootStackParamList, RootTabParamList } from './types';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+// JS stack on every platform. native-stack on Expo web paints a blank light
+// card for EventDetail (params arrive, screen never layouts).
+const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 function Tabs() {
@@ -73,8 +75,8 @@ export function RootNavigator() {
           <Stack.Navigator
             screenOptions={{
               headerShown: false,
-              contentStyle: { backgroundColor: colors.bg, flex: 1 },
-              animation: 'slide_from_right',
+              cardStyle: { backgroundColor: colors.bg, flex: 1 },
+              detachPreviousScreen: false,
             }}
           >
             <Stack.Screen name="Tabs" component={Tabs} />
@@ -101,7 +103,6 @@ const styles = StyleSheet.create({
     maxWidth: Platform.OS === 'web' ? 430 : undefined,
     backgroundColor: colors.bg,
     position: 'relative',
-    overflow: 'hidden',
   },
   tabBar: {
     backgroundColor: colors.bgElevated,

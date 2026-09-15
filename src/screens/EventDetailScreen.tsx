@@ -1,5 +1,5 @@
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Clipboard from 'expo-clipboard';
 import * as WebBrowser from 'expo-web-browser';
 import { useMemo, useState } from 'react';
@@ -28,7 +28,7 @@ import { colors, fonts, radius } from '../theme';
 
 export function EventDetailScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'EventDetail'>>();
   const eventId = route.params?.eventId;
   const events = useAppStore((s) => s.events);
@@ -175,7 +175,7 @@ export function EventDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg },
+  screen: { flex: 1, width: '100%', backgroundColor: colors.bg },
   scroll: { paddingHorizontal: 18, paddingBottom: 24 },
   missing: { color: colors.muted, fontFamily: fonts.body, padding: 18 },
   shareBtn: {

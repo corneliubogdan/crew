@@ -1,17 +1,20 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar, PrimaryButton, SectionLabel } from '../components/ui';
 import { MEMORY, personById } from '../data/seed';
 import { formatWhen, isDayOf } from '../lib/dates';
-import type { RootStackParamList } from '../navigation/types';
+import type { RootStackParamList, RootTabParamList } from '../navigation/types';
 import { useAppStore } from '../store/useAppStore';
 import { colors, fonts, radius } from '../theme';
 
 export function GoScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<
+    CompositeNavigationProp<BottomTabNavigationProp<RootTabParamList, 'Go'>, StackNavigationProp<RootStackParamList>>
+  >();
   const me = useAppStore((s) => s.me);
   const events = useAppStore((s) => s.events);
   const crews = useAppStore((s) => s.crews);

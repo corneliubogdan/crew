@@ -1,19 +1,22 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar, PrimaryButton, SectionLabel, VibeChip } from '../components/ui';
 import { VIBES } from '../data/vibes';
 import { IAP_COPY } from '../api/iap';
-import type { RootStackParamList } from '../navigation/types';
+import type { RootStackParamList, RootTabParamList } from '../navigation/types';
 import { labelJoins, useAppStore } from '../store/useAppStore';
 import { colors, fonts, radius } from '../theme';
 import type { VibeId } from '../types';
 
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<
+    CompositeNavigationProp<BottomTabNavigationProp<RootTabParamList, 'You'>, StackNavigationProp<RootStackParamList>>
+  >();
   const me = useAppStore((s) => s.me);
   const userVibes = useAppStore((s) => s.userVibes);
   const toggleUserVibe = useAppStore((s) => s.toggleUserVibe);

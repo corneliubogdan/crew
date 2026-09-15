@@ -1,5 +1,5 @@
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -29,7 +29,7 @@ const TICKETS: { id: TicketStatus; label: string }[] = [
 
 export function CrewRoomScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CrewRoom'>>();
   const allCrews = useAppStore((s) => s.crews);
   const crew = allCrews.find((c) => c.id === route.params.crewId);
