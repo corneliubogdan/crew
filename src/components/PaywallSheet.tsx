@@ -1,9 +1,44 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IAP_COPY } from '../api/iap';
 import { useAppStore } from '../store/useAppStore';
 import { colors, fonts, radius } from '../theme';
 import { PrimaryButton } from './ui';
+
+function SheetBody({
+  reason,
+  close,
+  unlock,
+  buy,
+  bottom,
+}: {
+  reason: string;
+  close: () => void;
+  unlock: () => void;
+  buy: () => void;
+  bottom: number;
+}) {
+  return (
+    <View style={[styles.sheet, { paddingBottom: Math.max(bottom, 20) }]}>
+      <View style={styles.grab} />
+      <Text style={styles.kicker}>soft paywall</Text>
+      <Text style={styles.title}>one crew is free.{'\n'}the rest is pass.</Text>
+      {reason ? <Text style={styles.reason}>{reason}</Text> : null}
+      <Text style={styles.body}>
+        browse everything. join or open 1 crew / month on us. after that it&apos;s {IAP_COPY.joinPrice} or{' '}
+        {IAP_COPY.passPrice} unlimited.
+      </Text>
+      <Text style={styles.honest}>{IAP_COPY.honest} not a ticket tax. we don&apos;t sell tickets.</Text>
+      <PrimaryButton label={`unlock crew pass · ${IAP_COPY.passPrice}`} onPress={unlock} />
+      <View style={{ height: 10 }} />
+      <PrimaryButton label={`one more join · ${IAP_COPY.joinPrice}`} tone="ghost" onPress={buy} />
+      <Pressable onPress={close} style={styles.later}>
+        <Text style={styles.laterTxt}>not now</Text>
+      </Pressable>
+      <Text style={styles.fine}>mock IAP — no charge, local flag only</Text>
+    </View>
+  );
+}
 
 export function PaywallSheet() {
   const open = useAppStore((s) => s.paywallOpen);
@@ -12,40 +47,41 @@ export function PaywallSheet() {
   const unlock = useAppStore((s) => s.unlockCrewPass);
   const buy = useAppStore((s) => s.buyExtraJoin);
   const insets = useSafeAreaInsets();
+  const body = (
+    <SheetBody reason={reason} close={close} unlock={unlock} buy={buy} bottom={insets.bottom} />
+  );
+
+  if (Platform.OS === 'web') {
+    if (!open) return null;
+    return (
+      <View style={styles.webRoot}>
+        <Pressable style={styles.dim} onPress={close} />
+        {body}
+      </View>
+    );
+  }
 
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={close}>
-      <View style={styles.overlay}>
+      <View style={styles.nativeRoot}>
         <Pressable style={StyleSheet.absoluteFill} onPress={close} />
-        <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 20) }]}>
-          <View style={styles.grab} />
-          <Text style={styles.kicker}>soft paywall</Text>
-          <Text style={styles.title}>one crew is free.{'\n'}the rest is pass.</Text>
-          {reason ? <Text style={styles.reason}>{reason}</Text> : null}
-          <Text style={styles.body}>
-            browse everything. join or open 1 crew / month on us. after that it&apos;s {IAP_COPY.joinPrice} or{' '}
-            {IAP_COPY.passPrice} unlimited.
-          </Text>
-          <Text style={styles.honest}>{IAP_COPY.honest} not a ticket tax. we don&apos;t sell tickets.</Text>
-          <PrimaryButton label={`unlock crew pass · ${IAP_COPY.passPrice}`} onPress={unlock} />
-          <View style={{ height: 10 }} />
-          <PrimaryButton
-            label={`one more join · ${IAP_COPY.joinPrice}`}
-            tone="ghost"
-            onPress={buy}
-          />
-          <Pressable onPress={close} style={styles.later}>
-            <Text style={styles.laterTxt}>not now</Text>
-          </Pressable>
-          <Text style={styles.fine}>mock IAP — no charge, local flag only</Text>
-        </View>
+        {body}
       </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
+  webRoot: {
+    ...StyleSheet.absoluteFill,
+    justifyContent: 'flex-end',
+    zIndex: 50,
+  },
+  nativeRoot: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
+  dim: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: colors.overlay,
+  },
   sheet: {
     backgroundColor: colors.bgElevated,
     borderTopLeftRadius: radius.xl,

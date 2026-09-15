@@ -82,8 +82,8 @@ export function RootNavigator() {
             <Stack.Screen name="CrewRoom" component={CrewRoomScreen} />
             <Stack.Screen name="Afterglow" component={AfterglowScreen} />
           </Stack.Navigator>
-          <PaywallSheet />
         </NavigationContainer>
+        <PaywallSheet />
       </View>
     </View>
   );
@@ -100,6 +100,8 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: Platform.OS === 'web' ? 430 : undefined,
     backgroundColor: colors.bg,
+    position: 'relative',
+    overflow: 'hidden',
   },
   tabBar: {
     backgroundColor: colors.bgElevated,
