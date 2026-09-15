@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar, PrimaryButton, SectionLabel, VibeChip } from '../components/ui';
@@ -27,7 +28,11 @@ export function ProfileScreen() {
   );
   const openPaywall = useAppStore((s) => s.openPaywall);
   const resetDemo = useAppStore((s) => s.resetDemo);
-  const myCrews = useAppStore((s) => s.crews.filter((c) => c.members.some((m) => m.personId === s.me.id)));
+  const allCrews = useAppStore((s) => s.crews);
+  const myCrews = useMemo(
+    () => allCrews.filter((c) => c.members.some((m) => m.personId === me.id)),
+    [allCrews, me.id],
+  );
   const events = useAppStore((s) => s.events);
 
   return (

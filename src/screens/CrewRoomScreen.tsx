@@ -31,9 +31,15 @@ export function CrewRoomScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'CrewRoom'>>();
-  const crew = useAppStore((s) => s.crews.find((c) => c.id === route.params.crewId));
-  const event = useAppStore((s) => s.events.find((e) => e.id === crew?.eventId));
-  const messages = useAppStore((s) => s.messages.filter((m) => m.crewId === route.params.crewId));
+  const allCrews = useAppStore((s) => s.crews);
+  const crew = allCrews.find((c) => c.id === route.params.crewId);
+  const events = useAppStore((s) => s.events);
+  const event = events.find((e) => e.id === crew?.eventId);
+  const allMessages = useAppStore((s) => s.messages);
+  const messages = useMemo(
+    () => allMessages.filter((m) => m.crewId === route.params.crewId),
+    [allMessages, route.params.crewId],
+  );
   const me = useAppStore((s) => s.me);
   const sendMessage = useAppStore((s) => s.sendMessage);
   const setTicketStatus = useAppStore((s) => s.setTicketStatus);
@@ -41,7 +47,7 @@ export function CrewRoomScreen() {
   const leaveCrew = useAppStore((s) => s.leaveCrew);
   const joinCrew = useAppStore((s) => s.joinCrew);
   const openPaywall = useAppStore((s) => s.openPaywall);
-  const isMember = useAppStore((s) => (crew ? s.isMember(crew.id) : false));
+  const isMember = Boolean(crew?.members.some((m) => m.personId === me.id));
   const [joinHint, setJoinHint] = useState('');
   const [draft, setDraft] = useState('');
   const [spot, setSpot] = useState(crew?.meetupSpot ?? '');
