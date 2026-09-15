@@ -4,7 +4,9 @@ Mobile app for tech events where the product is going **with people** — teens 
 
 Dark-first, late-2026 youth social aesthetic (IG + Discord energy). We don't sell tickets. We help you show up as a crew of 3–8.
 
-## Run
+The Expo app is **not** wired to the API yet. Mobile still uses the in-app mock store.
+
+## Mobile
 
 No secrets. Works in Expo Go and on web.
 
@@ -16,10 +18,34 @@ npx expo start
 Then:
 
 - scan the QR with **Expo Go** (iOS/Android)
-- press `w` for **web**
+- press `w` for **web**, or `npx expo start --web`
 - `i` / `a` for simulators if you have them
 
 Scripts: `npm start`, `npm run web`, `npm run ios`, `npm run android`.
+
+## API + Hetzner box
+
+Fastify + Postgres 16 + Caddy. Single Docker Compose stack.
+
+```bash
+cp .env.example .env
+chmod 600 .env
+docker compose up --build
+curl http://127.0.0.1:3000/health
+```
+
+Magic link (dev returns the token):
+
+```bash
+curl -sS -X POST http://127.0.0.1:3000/auth/magic-link \
+  -H 'content-type: application/json' \
+  -d '{"email":"mira@crew.local"}'
+```
+
+Verify, then `Authorization: Bearer <jwt>` for `POST /crews`, `POST /crews/:id/join`, messages, `/me`.
+
+Local dump: `./scripts/pg_dump_local.sh`  
+Hetzner runbook: [`deploy/hetzner.md`](deploy/hetzner.md)
 
 ## Product (v1)
 
@@ -30,27 +56,28 @@ Scripts: `npm start`, `npm run web`, `npm run ios`, `npm run android`.
 - **You** — vibe prefs, join budget, mock Crew Pass.
 - **Soft paywall** — free browse + **1 crew join/open per month**. Crew Pass (~€7.99/mo) unlimited, or ~€2.49 per extra join. Copy is honest: *covers hosting + a bit to keep building.* Mock IAP (local flag), not Stripe.
 
-Seed: 12 believable Bucharest events + open crews. Catalog comes from **stub Luma + Meetup adapters** (fake data) plus a paste-URL field.
+Seed: 12 believable Bucharest events + open crews (mobile mock) / 8 events + crews in Postgres.
 
 ## Out of scope (on purpose)
 
-Real OAuth, ticket resale, full social graph, real payments, push at scale, Instagram marketing bot.
+Real OAuth, ticket resale, full social graph, real payments, push at scale, Instagram marketing bot, wiring Expo to this API, HA, offsite backups.
 
 ## Stack
 
 Expo (React Native) + TypeScript. Zustand + AsyncStorage. Mock API module under `src/api`.
+Server: Fastify + Postgres (`server/`). Deploy: Docker Compose + Caddy.
 
 ## Next phases
 
-1. Real Luma / Meetup adapters — see TODOs in `src/api/providers/luma.ts` and `meetup.ts`.
-2. Real IAP (StoreKit 2 / Play Billing) — `src/api/iap.ts`. Restore purchases.
-3. Auth that isn't a fake Mira profile.
-4. Push for “crew is at the pin”.
-5. Afterglow → real “go with again” graph.
-6. More cities once Bucharest feels obvious.
-7. Optional share-to-IG as caption + sticker, still not a spam bot.
+1. Point the Expo app at this API.
+2. Real Luma / Meetup adapters — TODOs in `src/api/providers/` and `server/src/providers/events.ts`.
+3. Real IAP (StoreKit 2 / Play Billing) — `src/api/iap.ts`. Restore purchases.
+4. Email the magic link in production.
+5. Push for “crew is at the pin”.
+6. Afterglow → real “go with again” graph.
+7. More cities once Bucharest feels obvious.
 
-## Demo notes
+## Demo notes (mobile mock)
 
 - First join/open in a month is free. The second hits the paywall. Unlock Pass or buy one extra join (mock).
 - Profile → **reset demo data** wipes local state.

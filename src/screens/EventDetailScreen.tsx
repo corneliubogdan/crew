@@ -30,12 +30,13 @@ export function EventDetailScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'EventDetail'>>();
+  const eventId = route.params?.eventId;
   const events = useAppStore((s) => s.events);
-  const event = events.find((e) => e.id === route.params.eventId);
+  const event = events.find((e) => e.id === eventId);
   const allCrews = useAppStore((s) => s.crews);
   const crews = useMemo(
-    () => allCrews.filter((c) => c.eventId === route.params.eventId),
-    [allCrews, route.params.eventId],
+    () => (eventId ? allCrews.filter((c) => c.eventId === eventId) : []),
+    [allCrews, eventId],
   );
   const me = useAppStore((s) => s.me);
   const createCrew = useAppStore((s) => s.createCrew);
