@@ -1,0 +1,7 @@
+{$SITE_ADDRESS} {
+	encode gzip
+	reverse_proxy api:3000
+	header {
+		-Server
+	}
+}
